@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EbanisteriaCAD - Admin</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-topbar"></header>
+
+  <main>
+    <section id="admin-panel">
+      <h2>Panel Admin</h2>
+      <p>Actualiza About, Contacto, Precios y Disenos. Los cambios se guardan en este navegador.</p>
+
+      <div class="admin-actions">
+        <button id="saveAllBtn" type="button">Guardar Todo</button>
+        <button id="resetBtn" type="button">Restaurar Base</button>
+        <button id="exportBtn" type="button">Exportar JSON</button>
+      </div>
+
+      <label class="admin-import-label" for="importFile">Importar JSON:</label>
+      <input id="importFile" type="file" accept="application/json" />
+
+      <hr class="admin-sep" />
+
+      <h3>About / Nosotros</h3>
+      <label for="aboutTitle">Titulo</label>
+      <input id="aboutTitle" type="text" />
+      <label for="aboutParagraphs">Parrafos (uno por linea)</label>
+      <textarea id="aboutParagraphs" rows="8"></textarea>
+
+      <hr class="admin-sep" />
+
+      <h3>Contacto</h3>
+      <label for="contactTitle">Titulo</label>
+      <input id="contactTitle" type="text" />
+      <label for="contactPhones">Telefonos (uno por linea)</label>
+      <textarea id="contactPhones" rows="4"></textarea>
+      <label for="contactEmail">Email</label>
+      <input id="contactEmail" type="email" />
+
+      <hr class="admin-sep" />
+
+      <h3>Precios</h3>
+      <label for="pricingTitle">Titulo</label>
+      <input id="pricingTitle" type="text" />
+      <div id="pricingRows" class="admin-list"></div>
+      <button id="addPriceRowBtn" type="button">Agregar Fila</button>
+
+      <hr class="admin-sep" />
+
+      <h3>Disenos (por carpeta/categoria)</h3>
+      <label for="designsTitle">Titulo</label>
+      <input id="designsTitle" type="text" />
+
+      <div class="admin-inline">
+        <select id="categorySelect"></select>
+        <button id="addCategoryBtn" type="button">Agregar Carpeta</button>
+        <button id="removeCategoryBtn" type="button">Eliminar Carpeta</button>
+      </div>
+
+      <label for="categoryName">Nombre de Carpeta</label>
+      <input id="categoryName" type="text" />
+
+      <label for="imageUpload">Subir imagenes a carpeta</label>
+      <input id="imageUpload" type="file" accept="image/*" multiple />
+
+      <label for="imageUrl">Agregar imagen por URL</label>
+      <input id="imageUrl" type="url" placeholder="https://..." />
+      <label for="imageCaption">Caption</label>
+      <input id="imageCaption" type="text" />
+      <button id="addImageUrlBtn" type="button">Agregar URL</button>
+
+      <div id="imagesList" class="admin-list"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a class="footer-link" href="index.html">Ir al sitio</a>
+    </div>
+    <p>&copy; 2026 EbanisteriaCAD. Admin local.</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
