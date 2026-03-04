@@ -1,90 +1,150 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EbanisteriaCAD - Admin</title>
+  <title>Admin Panel | Ebanistería CAD</title>
+  <meta name="description" content="Panel administrativo de Ebanistería CAD para gestionar solicitudes y contenido." />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  <header class="site-topbar"></header>
-
-  <main>
-    <section id="admin-panel">
-      <h2>Panel Admin</h2>
-      <p>Actualiza About, Contacto, Precios y Disenos. Los cambios se guardan en este navegador.</p>
-
-      <div class="admin-actions">
-        <button id="saveAllBtn" type="button">Guardar Todo</button>
-        <button id="resetBtn" type="button">Restaurar Base</button>
-        <button id="exportBtn" type="button">Exportar JSON</button>
+<body class="admin-body">
+  <div class="admin-app-shell">
+    <header class="admin-topbar">
+      <div class="admin-topbar-left">
+        <button id="sidebarToggle" class="admin-icon-btn" type="button" aria-label="Abrir menú">
+          <span></span><span></span><span></span>
+        </button>
+        <a class="admin-brand" href="index.html" aria-label="Ir al sitio público">
+          <span class="admin-brand-logo-wrap">
+            <img src="assets/logo.jpg" alt="Logo Ebanistería CAD" class="admin-brand-logo" />
+          </span>
+          <div>
+            <strong>Admin Panel</strong>
+            <small>Ebanistería CAD</small>
+          </div>
+        </a>
       </div>
-
-      <label class="admin-import-label" for="importFile">Importar JSON:</label>
-      <input id="importFile" type="file" accept="application/json" />
-
-      <hr class="admin-sep" />
-
-      <h3>About / Nosotros</h3>
-      <label for="aboutTitle">Titulo</label>
-      <input id="aboutTitle" type="text" />
-      <label for="aboutParagraphs">Parrafos (uno por linea)</label>
-      <textarea id="aboutParagraphs" rows="8"></textarea>
-
-      <hr class="admin-sep" />
-
-      <h3>Contacto</h3>
-      <label for="contactTitle">Titulo</label>
-      <input id="contactTitle" type="text" />
-      <label for="contactPhones">Telefonos (uno por linea)</label>
-      <textarea id="contactPhones" rows="4"></textarea>
-      <label for="contactEmail">Email</label>
-      <input id="contactEmail" type="email" />
-
-      <hr class="admin-sep" />
-
-      <h3>Precios</h3>
-      <label for="pricingTitle">Titulo</label>
-      <input id="pricingTitle" type="text" />
-      <div id="pricingRows" class="admin-list"></div>
-      <button id="addPriceRowBtn" type="button">Agregar Fila</button>
-
-      <hr class="admin-sep" />
-
-      <h3>Disenos (por carpeta/categoria)</h3>
-      <label for="designsTitle">Titulo</label>
-      <input id="designsTitle" type="text" />
-
-      <div class="admin-inline">
-        <select id="categorySelect"></select>
-        <button id="addCategoryBtn" type="button">Agregar Carpeta</button>
-        <button id="removeCategoryBtn" type="button">Eliminar Carpeta</button>
+      <div class="admin-topbar-right">
+        <span id="adminNow" class="admin-now">--</span>
+        <span class="admin-user-dot" aria-hidden="true">A</span>
       </div>
+    </header>
 
-      <label for="categoryName">Nombre de Carpeta</label>
-      <input id="categoryName" type="text" />
+    <div class="admin-layout">
+      <aside id="adminSidebar" class="admin-sidebar" aria-label="Navegación de administración">
+        <nav>
+          <a href="#resumen" class="admin-nav-link active">Resumen</a>
+          <a href="#solicitudes" class="admin-nav-link">Solicitudes (Cotizaciones)</a>
+          <a href="#disenos" class="admin-nav-link">Diseños / Galería</a>
+          <a href="#precios" class="admin-nav-link">Precios</a>
+          <a href="#ajustes" class="admin-nav-link">Ajustes</a>
+        </nav>
+      </aside>
 
-      <label for="imageUpload">Subir imagenes a carpeta</label>
-      <input id="imageUpload" type="file" accept="image/*" multiple />
+      <main class="admin-main">
+        <p class="admin-warning">Nota: Este panel no está protegido aún. No compartas el enlace públicamente.</p>
 
-      <label for="imageUrl">Agregar imagen por URL</label>
-      <input id="imageUrl" type="url" placeholder="https://..." />
-      <label for="imageCaption">Caption</label>
-      <input id="imageCaption" type="text" />
-      <button id="addImageUrlBtn" type="button">Agregar URL</button>
+        <section id="resumen" class="admin-section">
+          <h1 class="section-title">Resumen</h1>
+          <p class="section-subtitle">Métricas rápidas del estado de solicitudes.</p>
 
-      <div id="imagesList" class="admin-list"></div>
-    </section>
-  </main>
+          <div class="grid grid-4 admin-stats">
+            <article class="card admin-stat-card">
+              <span>Total Solicitudes</span>
+              <strong id="statTotal">0</strong>
+            </article>
+            <article class="card admin-stat-card">
+              <span>Esta Semana</span>
+              <strong id="statWeek">0</strong>
+            </article>
+            <article class="card admin-stat-card">
+              <span>Pendientes</span>
+              <strong id="statPending">0</strong>
+            </article>
+            <article class="card admin-stat-card">
+              <span>Completadas</span>
+              <strong id="statDone">0</strong>
+            </article>
+          </div>
+        </section>
 
-  <footer class="site-footer">
-    <div class="footer-links">
-      <a class="footer-link" href="index.html">Ir al sitio</a>
+        <section id="solicitudes" class="admin-section">
+          <h2 class="section-title">Solicitudes (Cotizaciones)</h2>
+          <p class="section-subtitle">Busca, filtra y gestiona el estado de tus solicitudes.</p>
+
+          <div class="card">
+            <div class="admin-toolbar">
+              <input id="searchInput" type="search" placeholder="Buscar por nombre, email, teléfono o categoría" />
+              <select id="statusFilter" aria-label="Filtrar por estado">
+                <option value="Todos">Todos</option>
+                <option value="Nuevo">Nuevo</option>
+                <option value="En Proceso">En Proceso</option>
+                <option value="Completado">Completado</option>
+              </select>
+            </div>
+
+            <div id="loadingState" class="admin-loading" hidden>Cargando solicitudes...</div>
+            <div id="emptyState" class="admin-empty" hidden>
+              <p>No hay solicitudes todavía.</p>
+              <a href="quote.html" class="btn btn-outline">Crear solicitud de prueba</a>
+            </div>
+
+            <div class="admin-table-wrap" id="tableWrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Nombre</th>
+                    <th>Categoría</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="requestsTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="disenos" class="admin-section">
+          <h2 class="section-title">Diseños / Galería</h2>
+          <div class="card admin-placeholder">
+            <p>Próximamente: administración avanzada de carpetas, imágenes y estilos.</p>
+          </div>
+        </section>
+
+        <section id="precios" class="admin-section">
+          <h2 class="section-title">Precios</h2>
+          <div class="card admin-placeholder">
+            <p>Próximamente: configuración centralizada de paquetes y precios.</p>
+          </div>
+        </section>
+
+        <section id="ajustes" class="admin-section">
+          <h2 class="section-title">Ajustes</h2>
+          <div class="card admin-placeholder">
+            <p>Próximamente: preferencias de panel y seguridad.</p>
+          </div>
+        </section>
+      </main>
     </div>
-    <p>&copy; 2026 EbanisteriaCAD. Admin local.</p>
-  </footer>
+  </div>
 
-  <script src="script.js?v=20260303"></script>
-  <script src="admin.js?v=20260303"></script>
+  <div id="toastContainer" class="admin-toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <div id="requestModal" class="admin-modal" hidden>
+    <div class="admin-modal-backdrop" data-close-modal="true"></div>
+    <div class="admin-modal-card" role="dialog" aria-modal="true" aria-labelledby="requestModalTitle">
+      <div class="admin-modal-head">
+        <h3 id="requestModalTitle">Detalle de Solicitud</h3>
+        <button id="closeModalBtn" class="admin-icon-btn" type="button" aria-label="Cerrar">✕</button>
+      </div>
+      <div id="modalContent" class="admin-modal-body"></div>
+    </div>
+  </div>
+
+  <script src="admin.js?v=20260304"></script>
 </body>
 </html>
