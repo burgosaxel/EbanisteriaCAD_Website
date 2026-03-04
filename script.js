@@ -62,6 +62,22 @@
       '</div>';
   }
 
+  
+  function updateHeaderScrollState() {
+    var header = document.querySelector('.site-topbar');
+    if (!header) return;
+
+    if (window.scrollY > 10) {
+      header.classList.add('is-scrolled');
+    } else {
+      header.classList.remove('is-scrolled');
+    }
+  }
+
+  function bindScrollAccent() {
+    updateHeaderScrollState();
+    window.addEventListener('scroll', updateHeaderScrollState, { passive: true });
+  }
   function bindMobileMenu() {
     var toggle = document.querySelector('.nav-toggle');
     var nav = document.querySelector('.top-links-nav');
@@ -156,4 +172,5 @@
   renderHeader();
   renderFooter();
   bindQuoteForm();
+  bindScrollAccent();
 })();

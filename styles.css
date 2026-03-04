@@ -86,12 +86,12 @@ img {
   justify-content: center;
   gap: 0.5rem;
   border-radius: 999px;
-  padding: 0.72rem 1.25rem;
+  padding: 0.74rem 1.28rem;
   font-weight: 700;
   text-decoration: none;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .btn:hover {
@@ -126,9 +126,30 @@ img {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.92);
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+}
+
+.site-topbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--primary);
+  opacity: 0;
+  transform: scaleX(0.98);
+  transform-origin: center;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.site-topbar.is-scrolled::after {
+  opacity: 1;
+  transform: scaleX(1);
 }
 
 .topbar-inner {
@@ -231,9 +252,13 @@ main {
   padding: var(--space-6) var(--space-4);
   box-shadow: var(--shadow);
   color: #fff;
-  background:
+  background-color: #121212;
+  background-image:
     linear-gradient(110deg, rgba(17, 19, 24, 0.74), rgba(17, 19, 24, 0.56)),
-    url('assets/index-hero.jpg') center/cover no-repeat;
+    url("assets/index-hero.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .hero h1 {
@@ -559,4 +584,44 @@ th {
 .about-card .section-subtitle {
   max-width: 64ch;
   margin: 0 auto 1.1rem;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 760;
+  letter-spacing: -0.01em;
+}
+
+main p {
+  line-height: 1.78;
+  max-width: 60ch;
+}
+
+.card p,
+.hero p {
+  max-width: none;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    background-image: none !important;
+    background: #121212 !important;
+    text-align: center;
+    justify-content: center;
+    padding: 2rem 1.1rem;
+  }
+
+  .hero p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
 }
