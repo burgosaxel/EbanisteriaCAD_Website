@@ -1,86 +1,258 @@
 ﻿(function () {
-  var STORAGE_KEY = 'ebanisteria_admin_requests_v1';
+  var STORAGE_KEY = 'ebanisteria_quotes';
   var SIDEBAR_OPEN_CLASS = 'admin-sidebar-open';
 
-  var SAMPLE_REQUESTS = [
+  var SAMPLE_QUOTES = [
     {
       id: 'REQ-1001',
-      fecha: '2026-03-01T10:12:00',
-      nombre: 'María Torres',
-      categoria: 'Cocinas',
-      telefono: '787-555-0101',
+      name: 'María Torres',
+      phone: '787-555-0101',
       email: 'maria.torres@email.com',
-      estado: 'Nuevo',
-      medidas: '12x10 pies',
+      category: 'Cocinas',
+      message: 'Quiero una cocina moderna en L con isla.',
+      status: 'new',
+      createdAt: '2026-03-01T10:12:00',
+      measures: '12x10 pies',
       material: 'PVC + cuarzo',
-      presupuesto: '$6,000 - $8,000',
-      mensaje: 'Quiero una cocina moderna en L con isla.'
+      budget: '$6,000 - $8,000'
     },
     {
       id: 'REQ-1002',
-      fecha: '2026-03-02T14:40:00',
-      nombre: 'Carlos Rivera',
-      categoria: 'Closets',
-      telefono: '787-555-0198',
+      name: 'Carlos Rivera',
+      phone: '787-555-0198',
       email: 'carlos.rivera@email.com',
-      estado: 'En Proceso',
-      medidas: '8x6 pies',
+      category: 'Closets',
+      message: 'Necesito closet empotrado con módulos y gavetas.',
+      status: 'in_progress',
+      createdAt: '2026-03-02T14:40:00',
+      measures: '8x6 pies',
       material: 'Melamina premium',
-      presupuesto: '$3,000 - $4,500',
-      mensaje: 'Necesito closet empotrado con módulos y gavetas.'
+      budget: '$3,000 - $4,500'
     },
     {
       id: 'REQ-1003',
-      fecha: '2026-02-25T09:05:00',
-      nombre: 'Laura Méndez',
-      categoria: 'Remodelación',
-      telefono: '787-555-0137',
+      name: 'Laura Méndez',
+      phone: '787-555-0137',
       email: 'laura.mendez@email.com',
-      estado: 'Completado',
-      medidas: 'Apartamento completo',
+      category: 'Remodelación',
+      message: 'Proyecto integral de cocina y mueble de TV.',
+      status: 'completed',
+      createdAt: '2026-02-25T09:05:00',
+      measures: 'Apartamento completo',
       material: 'Combinado',
-      presupuesto: '$12,000+',
-      mensaje: 'Proyecto integral de cocina y mueble de TV.'
+      budget: '$12,000+'
     }
   ];
 
+  var STATUS_META = {
+    new: { label: 'Nuevo', css: 'status-nuevo' },
+    in_progress: { label: 'En Proceso', css: 'status-en-proceso' },
+    completed: { label: 'Completado', css: 'status-completado' }
+  };
+
+  // Data service abstraction
+  // TODO: Replace localStorage with Firebase Firestore queries
+  var QuoteService = {
+    getQuotes: getQuotes,
+    saveQuote: saveQuote,
+    updateQuoteStatus: updateQuoteStatus,
+    deleteQuote: deleteQuote
+  };
+
   var state = {
-    requests: [],
     search: '',
-    status: 'Todos',
-    loading: false,
-    activeId: null
+    statusFilter: 'Todos',
+    loading: false
   };
 
   function byId(id) {
     return document.getElementById(id);
   }
 
-  function nowISODate() {
-    return new Date().toISOString();
+  function notifyQuotesUpdated() {
+    document.dispatchEvent(new CustomEvent('quotesUpdated'));
   }
 
-  function parseOrDefault(raw, fallback) {
+  function readStore() {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+
     try {
       var parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed : fallback;
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
-      return fallback;
+      return [];
     }
   }
 
-  function loadRequests() {
-    var raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      state.requests = SAMPLE_REQUESTS.slice();
-      saveRequests();
-      return;
+  function writeStore(quotes, emitEvent) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(quotes));
+    if (emitEvent !== false) {
+      notifyQuotesUpdated();
     }
-    state.requests = parseOrDefault(raw, SAMPLE_REQUESTS.slice());
   }
 
-  function saveRequests() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.requests));
+  function generateId() {
+    return 'REQ-' + Date.now().toString(36).toUpperCase();
+  }
+
+  function normalizeQuote(input) {
+    return {
+      id: input.id || generateId(),
+      name: input.name || '',
+      phone: input.phone || '',
+      email: input.email || '',
+      category: input.category || '',
+      message: input.message || '',
+      status: input.status || 'new',
+      createdAt: input.createdAt || new Date().toISOString(),
+      measures: input.measures || '',
+      material: input.material || '',
+      budget: input.budget || ''
+    };
+  }
+
+  function getQuotes() {
+    return readStore();
+  }
+
+  function saveQuote(quote) {
+    var quotes = readStore();
+    var normalized = normalizeQuote(quote || {});
+    quotes.push(normalized);
+    writeStore(quotes);
+    return normalized;
+  }
+
+  function updateQuoteStatus(id, status) {
+    var quotes = readStore();
+    var updated = false;
+
+    quotes = quotes.map(function (q) {
+      if (q.id !== id) return q;
+      updated = true;
+      return Object.assign({}, q, { status: status });
+    });
+
+    if (updated) {
+      writeStore(quotes);
+    }
+
+    return updated;
+  }
+
+  function deleteQuote(id) {
+    var quotes = readStore();
+    var next = quotes.filter(function (q) { return q.id !== id; });
+
+    if (next.length !== quotes.length) {
+      writeStore(next);
+      return true;
+    }
+
+    return false;
+  }
+
+  function seedDemoDataIfNeeded() {
+    if (QuoteService.getQuotes().length > 0) return;
+
+    SAMPLE_QUOTES.forEach(function (quote) {
+      var quotes = readStore();
+      quotes.push(normalizeQuote(quote));
+      writeStore(quotes, false);
+    });
+
+    notifyQuotesUpdated();
+  }
+
+  function formatDate(iso) {
+    var d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '-';
+
+    return d.toLocaleString('es-PR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  function normalize(value) {
+    return String(value || '').toLowerCase();
+  }
+
+  function statusToFilterValue(status) {
+    if (status === 'new') return 'Nuevo';
+    if (status === 'in_progress') return 'En Proceso';
+    if (status === 'completed') return 'Completado';
+    return 'Todos';
+  }
+
+  function filterValueToStatus(filter) {
+    if (filter === 'Nuevo') return 'new';
+    if (filter === 'En Proceso') return 'in_progress';
+    if (filter === 'Completado') return 'completed';
+    return 'all';
+  }
+
+  function getFilteredQuotes() {
+    var q = normalize(state.search);
+    var statusFilter = filterValueToStatus(state.statusFilter);
+
+    return QuoteService.getQuotes().filter(function (item) {
+      var statusOk = statusFilter === 'all' || item.status === statusFilter;
+      if (!statusOk) return false;
+
+      if (!q) return true;
+
+      return [item.name, item.email, item.category, item.phone]
+        .some(function (v) { return normalize(v).indexOf(q) !== -1; });
+    });
+  }
+
+  function calcStats() {
+    var quotes = QuoteService.getQuotes();
+    var total = quotes.length;
+    var pending = quotes.filter(function (r) { return r.status === 'new'; }).length;
+    var done = quotes.filter(function (r) { return r.status === 'completed'; }).length;
+
+    var now = new Date();
+    var weekAgo = new Date(now);
+    weekAgo.setDate(now.getDate() - 7);
+
+    var week = quotes.filter(function (r) {
+      var d = new Date(r.createdAt);
+      return d >= weekAgo && d <= now;
+    }).length;
+
+    byId('statTotal').textContent = String(total);
+    byId('statWeek').textContent = String(week);
+    byId('statPending').textContent = String(pending);
+    byId('statDone').textContent = String(done);
+  }
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function rowActions(id, status) {
+    var disableProcess = status === 'in_progress';
+    var disableDone = status === 'completed';
+
+    return (
+      '<div class="admin-actions-cell">' +
+      '<button class="btn btn-outline admin-mini" data-action="view" data-id="' + id + '">Ver</button>' +
+      '<button class="btn btn-outline admin-mini" data-action="process" data-id="' + id + '"' + (disableProcess ? ' disabled' : '') + '>En Proceso</button>' +
+      '<button class="btn btn-primary admin-mini" data-action="done" data-id="' + id + '"' + (disableDone ? ' disabled' : '') + '>Completar</button>' +
+      '<button class="btn btn-outline admin-mini danger" data-action="delete" data-id="' + id + '">Eliminar</button>' +
+      '</div>'
+    );
   }
 
   function setLoading(value) {
@@ -97,82 +269,19 @@
     }
   }
 
-  function formatDate(iso) {
-    var d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return '-';
-    return d.toLocaleString('es-PR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
-  function normalize(value) {
-    return String(value || '').toLowerCase();
-  }
-
-  function getFilteredRequests() {
-    var q = normalize(state.search);
-
-    return state.requests.filter(function (item) {
-      var statusOk = state.status === 'Todos' || item.estado === state.status;
-      if (!statusOk) return false;
-
-      if (!q) return true;
-
-      return [item.nombre, item.email, item.categoria, item.telefono]
-        .some(function (v) { return normalize(v).indexOf(q) !== -1; });
-    });
-  }
-
-  function calcStats() {
-    var total = state.requests.length;
-    var pending = state.requests.filter(function (r) { return r.estado === 'Nuevo'; }).length;
-    var done = state.requests.filter(function (r) { return r.estado === 'Completado'; }).length;
-
-    var now = new Date();
-    var weekAgo = new Date(now);
-    weekAgo.setDate(now.getDate() - 7);
-
-    var week = state.requests.filter(function (r) {
-      var d = new Date(r.fecha);
-      return d >= weekAgo && d <= now;
-    }).length;
-
-    byId('statTotal').textContent = String(total);
-    byId('statWeek').textContent = String(week);
-    byId('statPending').textContent = String(pending);
-    byId('statDone').textContent = String(done);
-  }
-
-  function rowActions(id, status) {
-    var disableProcess = status === 'En Proceso';
-    var disableDone = status === 'Completado';
-
-    return (
-      '<div class="admin-actions-cell">' +
-      '<button class="btn btn-outline admin-mini" data-action="view" data-id="' + id + '">Ver</button>' +
-      '<button class="btn btn-outline admin-mini" data-action="process" data-id="' + id + '"' + (disableProcess ? ' disabled' : '') + '>En Proceso</button>' +
-      '<button class="btn btn-primary admin-mini" data-action="done" data-id="' + id + '"' + (disableDone ? ' disabled' : '') + '>Completar</button>' +
-      '<button class="btn btn-outline admin-mini danger" data-action="delete" data-id="' + id + '">Eliminar</button>' +
-      '</div>'
-    );
-  }
-
   function renderTable() {
     var tbody = byId('requestsTbody');
     var empty = byId('emptyState');
     var tableWrap = byId('tableWrap');
     if (!tbody || !empty || !tableWrap) return;
 
-    var rows = getFilteredRequests();
+    var rows = getFilteredQuotes();
 
     if (!rows.length) {
       tbody.innerHTML = '';
       tableWrap.hidden = true;
       empty.hidden = false;
+      calcStats();
       return;
     }
 
@@ -180,33 +289,22 @@
     tableWrap.hidden = false;
 
     tbody.innerHTML = rows.map(function (item) {
+      var meta = STATUS_META[item.status] || STATUS_META.new;
+
       return (
         '<tr>' +
-        '<td>' + formatDate(item.fecha) + '</td>' +
-        '<td>' + escapeHtml(item.nombre) + '</td>' +
-        '<td>' + escapeHtml(item.categoria) + '</td>' +
-        '<td>' + escapeHtml(item.telefono) + '</td>' +
+        '<td>' + formatDate(item.createdAt) + '</td>' +
+        '<td>' + escapeHtml(item.name) + '</td>' +
+        '<td>' + escapeHtml(item.category) + '</td>' +
+        '<td>' + escapeHtml(item.phone) + '</td>' +
         '<td>' + escapeHtml(item.email) + '</td>' +
-        '<td><span class="admin-status status-' + slug(item.estado) + '">' + escapeHtml(item.estado) + '</span></td>' +
-        '<td>' + rowActions(item.id, item.estado) + '</td>' +
+        '<td><span class="admin-status ' + meta.css + '">' + escapeHtml(meta.label) + '</span></td>' +
+        '<td>' + rowActions(item.id, item.status) + '</td>' +
         '</tr>'
       );
     }).join('');
 
     calcStats();
-  }
-
-  function slug(value) {
-    return normalize(value).replace(/\s+/g, '-');
-  }
-
-  function escapeHtml(value) {
-    return String(value || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
   }
 
   function showToast(type, message) {
@@ -230,32 +328,34 @@
     }, 3000);
   }
 
+  function detail(label, value) {
+    return '<div><dt>' + escapeHtml(label) + '</dt><dd>' + escapeHtml(value) + '</dd></div>';
+  }
+
   function openRequestModal(request) {
     var modal = byId('requestModal');
     var content = byId('modalContent');
     if (!modal || !content || !request) return;
 
+    var meta = STATUS_META[request.status] || STATUS_META.new;
+
     content.innerHTML =
       '<dl class="admin-detail-grid">' +
       detail('ID', request.id) +
-      detail('Fecha', formatDate(request.fecha)) +
-      detail('Nombre', request.nombre) +
-      detail('Categoría', request.categoria) +
-      detail('Teléfono', request.telefono) +
+      detail('Fecha', formatDate(request.createdAt)) +
+      detail('Nombre', request.name) +
+      detail('Categoría', request.category) +
+      detail('Teléfono', request.phone) +
       detail('Email', request.email) +
-      detail('Estado', request.estado) +
-      detail('Medidas', request.medidas || '-') +
+      detail('Estado', meta.label) +
+      detail('Medidas', request.measures || '-') +
       detail('Material', request.material || '-') +
-      detail('Presupuesto', request.presupuesto || '-') +
-      detail('Mensaje', request.mensaje || '-') +
+      detail('Presupuesto', request.budget || '-') +
+      detail('Mensaje', request.message || '-') +
       '</dl>';
 
     modal.hidden = false;
     document.body.classList.add('admin-modal-open');
-  }
-
-  function detail(label, value) {
-    return '<div><dt>' + escapeHtml(label) + '</dt><dd>' + escapeHtml(value) + '</dd></div>';
   }
 
   function closeModal() {
@@ -265,30 +365,8 @@
     document.body.classList.remove('admin-modal-open');
   }
 
-  function findRequest(id) {
-    return state.requests.find(function (r) { return r.id === id; });
-  }
-
-  function updateStatus(id, status) {
-    var req = findRequest(id);
-    if (!req) return;
-    req.estado = status;
-    saveRequests();
-    renderTable();
-    showToast('success', 'Estado actualizado a: ' + status);
-  }
-
-  function deleteRequest(id) {
-    var req = findRequest(id);
-    if (!req) return;
-
-    var ok = window.confirm('¿Eliminar la solicitud de ' + req.nombre + '?');
-    if (!ok) return;
-
-    state.requests = state.requests.filter(function (r) { return r.id !== id; });
-    saveRequests();
-    renderTable();
-    showToast('info', 'Solicitud eliminada.');
+  function findQuote(id) {
+    return QuoteService.getQuotes().find(function (r) { return r.id === id; });
   }
 
   function handleActionClick(e) {
@@ -300,22 +378,28 @@
     if (!action || !id) return;
 
     if (action === 'view') {
-      openRequestModal(findRequest(id));
+      openRequestModal(findQuote(id));
       return;
     }
 
     if (action === 'process') {
-      updateStatus(id, 'En Proceso');
+      var okProcess = QuoteService.updateQuoteStatus(id, 'in_progress');
+      if (okProcess) showToast('success', 'Estado actualizado a En Proceso.');
       return;
     }
 
     if (action === 'done') {
-      updateStatus(id, 'Completado');
+      var okDone = QuoteService.updateQuoteStatus(id, 'completed');
+      if (okDone) showToast('success', 'Solicitud marcada como completada.');
       return;
     }
 
     if (action === 'delete') {
-      deleteRequest(id);
+      var req = findQuote(id);
+      if (!req) return;
+      if (!window.confirm('¿Eliminar la solicitud de ' + req.name + '?')) return;
+      var removed = QuoteService.deleteQuote(id);
+      if (removed) showToast('info', 'Solicitud eliminada.');
     }
   }
 
@@ -362,7 +446,7 @@
     });
 
     status.addEventListener('change', function () {
-      state.status = status.value;
+      state.statusFilter = status.value;
       renderTable();
     });
   }
@@ -419,9 +503,15 @@
     window.addEventListener('scroll', updateActive, { passive: true });
   }
 
+  function refreshFromService() {
+    if (state.loading) return;
+    renderTable();
+  }
+
   function init() {
     setLoading(true);
-    loadRequests();
+
+    seedDemoDataIfNeeded();
 
     setTimeout(function () {
       setLoading(false);
@@ -430,11 +520,12 @@
       wireTableActions();
       wireModal();
       wireSectionSpy();
+      document.addEventListener('quotesUpdated', refreshFromService);
       renderTable();
       updateNowClock();
       setInterval(updateNowClock, 30000);
       showToast('info', 'Panel listo. Puedes gestionar solicitudes localmente.');
-    }, 350);
+    }, 320);
   }
 
   init();
