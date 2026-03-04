@@ -1,238 +1,157 @@
-(function () {
-  var STORAGE_KEY = 'ebanisteria_content_v1';
+﻿(function () {
+  var PAGE_PATH = window.location.pathname.split('/').pop() || 'index.html';
 
-  var DEFAULT_CONTENT = {
-    about: {
-      title: 'Sobre Ebanister\u00edaCAD',
-      paragraphs: [
-        'Soy Ana \u00c1lamo y llevo 12 a\u00f1os en la industria de los gabinetes. Junto a mi esposo Christian Del Valle, quien ha sido ebanista por 18, decidimos arriesgarnos y tener nuestro propio negocio.',
-        'Lo que comenz\u00f3 como un sue\u00f1o en la marquesina de nuestro hogar, es hoy Ebanister\u00eda CAD. Contamos con un taller de ebanister\u00eda ubicado en la carretera n\u00famero 1 en direcci\u00f3n de San Juan a Caguas.',
-        'Somos un equipo de trabajo extraordinario que d\u00eda a d\u00eda se levanta para realizar la cocina de tus sue\u00f1os.',
-        'Nos distingue nuestra rapidez, nuestra calidad, pero sobre todo, nuestra responsabilidad.'
-      ]
-    },
-    contact: {
-      title: 'Cont\u00e1ctenos',
-      phones: ['787-425-3887', '787-446-4469'],
-      email: 'ebanisteriacad@gmail.com'
-    },
-    pricing: {
-      title: 'Precios Base',
-      rows: [
-        { service: 'M\u00f3dulo b\u00e1sico de cocina', price: '$2,500' },
-        { service: 'Proyecto personalizado completo', price: '$5,000' }
-      ]
-    },
-    designs: {
-      title: 'Dise\u00f1os Destacados',
-      categories: [
-        {
-          name: 'Cocinas',
-          images: [
-            { src: '', caption: 'Cocina Moderna Minimalista' }
-          ]
-        },
-        {
-          name: 'Closets',
-          images: [
-            { src: '', caption: 'Closets y Muebles Empotrados' }
-          ]
-        },
-        {
-          name: 'Acabados',
-          images: [
-            { src: '', caption: 'Acabado Cl\u00e1sico Elegante' }
-          ]
-        }
-      ]
-    }
-  };
+  var NAV_ITEMS = [
+    { href: 'index.html', label: 'Inicio' },
+    { href: 'about.html', label: 'Nosotros' },
+    { href: 'designs.html', label: 'Diseños' },
+    { href: 'pricing.html', label: 'Precios' },
+    { href: 'contact.html', label: 'Contáctenos' }
+  ];
 
-  function cloneDefault() {
-    return JSON.parse(JSON.stringify(DEFAULT_CONTENT));
+  function isActive(href) {
+    return PAGE_PATH.toLowerCase() === href.toLowerCase();
   }
 
-  function loadContent() {
-    var raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return cloneDefault();
-    try {
-      var parsed = JSON.parse(raw);
-      return deepMerge(cloneDefault(), parsed);
-    } catch (e) {
-      return cloneDefault();
-    }
-  }
-
-  function deepMerge(base, incoming) {
-    if (!incoming || typeof incoming !== 'object') return base;
-    Object.keys(incoming).forEach(function (k) {
-      if (Array.isArray(incoming[k])) {
-        base[k] = incoming[k];
-      } else if (incoming[k] && typeof incoming[k] === 'object' && base[k] && typeof base[k] === 'object') {
-        base[k] = deepMerge(base[k], incoming[k]);
-      } else {
-        base[k] = incoming[k];
-      }
-    });
-    return base;
-  }
-
-  function currentPage() {
-    var file = window.location.pathname.split('/').pop();
-    return (file && file.length ? file : 'index.html').toLowerCase();
-  }
-
-  function renderHeader(page) {
+  function renderHeader() {
     var header = document.querySelector('.site-topbar');
     if (!header) return;
 
-    var links = [
-      { href: 'index.html', label: 'Inicio' },
-      { href: 'about.html', label: 'Nosotros' },
-      { href: 'quote.html', label: 'Cotizaci\u00f3n' },
-      { href: 'designs.html', label: 'Dise\u00f1os' },
-      { href: 'pricing.html', label: 'Precios' },
-      { href: 'contact.html', label: 'Cont\u00e1ctenos' }
-    ];
-
-    var navItems = links.map(function (link) {
-      var active = page === link.href ? ' class="active"' : '';
-      return '<li><a' + active + ' href="' + link.href + '">' + link.label + '</a></li>';
+    var links = NAV_ITEMS.map(function (item) {
+      var activeClass = isActive(item.href) ? ' class="active"' : '';
+      return '<li><a' + activeClass + ' href="' + item.href + '">' + item.label + '</a></li>';
     }).join('');
 
     header.innerHTML =
+      '<div class="container topbar-inner">' +
       '<a class="brand-logo-link" href="index.html">' +
-      '<img class="brand-logo" src="assets/logo.jpg" alt="Ebanister\u00edaCAD logo" />' +
+      '<img class="brand-logo" src="assets/logo.jpg" alt="Logo de Ebanistería CAD" />' +
       '</a>' +
-      '<nav class="top-links-nav"><ul>' + navItems + '</ul></nav>';
+      '<button class="nav-toggle" type="button" aria-label="Abrir menú" aria-controls="site-nav" aria-expanded="false">' +
+      '<span></span><span></span><span></span>' +
+      '</button>' +
+      '<nav id="site-nav" class="top-links-nav" aria-label="Principal">' +
+      '<ul>' + links + '</ul>' +
+      '<a class="btn btn-primary nav-cta" href="quote.html">Solicitar Cotización</a>' +
+      '</nav>' +
+      '</div>';
+
+    bindMobileMenu();
   }
 
-  function renderAbout(content) {
-    var section = document.getElementById('about');
-    if (!section) return;
-    section.innerHTML = '';
-    var h2 = document.createElement('h2');
-    h2.textContent = content.about.title;
-    section.appendChild(h2);
+  function renderFooter() {
+    var footer = document.querySelector('.site-footer');
+    if (!footer) return;
 
-    content.about.paragraphs.forEach(function (txt) {
-      var p = document.createElement('p');
-      p.textContent = txt;
-      section.appendChild(p);
-    });
+    footer.innerHTML =
+      '<div class="container footer-inner">' +
+      '<div class="footer-links">' +
+      '<a class="footer-link" href="about.html">Nosotros</a>' +
+      '<a class="footer-link" href="designs.html">Diseños</a>' +
+      '<a class="footer-link" href="pricing.html">Precios</a>' +
+      '<a class="footer-link" href="contact.html">Contáctenos</a>' +
+      '<a class="footer-link" href="quote.html">Cotizar Ahora</a>' +
+      '</div>' +
+      '<div class="footer-social">' +
+      '<a class="footer-icon" href="https://www.facebook.com/share/1GQxtdCVWr/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook</a>' +
+      '<a class="footer-icon" href="https://wa.me/17874464469" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">WhatsApp</a>' +
+      '</div>' +
+      '<p>© 2026 Ebanistería CAD. Todos los derechos reservados.</p>' +
+      '</div>';
   }
 
-  function renderContact(content) {
-    var section = document.getElementById('contact');
-    if (!section) return;
-    section.innerHTML = '';
+  function bindMobileMenu() {
+    var toggle = document.querySelector('.nav-toggle');
+    var nav = document.querySelector('.top-links-nav');
+    if (!toggle || !nav) return;
 
-    var h2 = document.createElement('h2');
-    h2.textContent = content.contact.title;
-    section.appendChild(h2);
-
-    content.contact.phones.forEach(function (phone) {
-      if (!phone) return;
-      var p = document.createElement('p');
-      p.textContent = 'Tel\u00e9fono: ' + phone;
-      section.appendChild(p);
-    });
-
-    var email = document.createElement('p');
-    email.textContent = 'Email: ' + (content.contact.email || '');
-    section.appendChild(email);
-  }
-
-  function renderPricing(content) {
-    var section = document.getElementById('pricing');
-    if (!section) return;
-
-    section.innerHTML = '';
-    var h2 = document.createElement('h2');
-    h2.textContent = content.pricing.title;
-    section.appendChild(h2);
-
-    var table = document.createElement('table');
-    var headRow = document.createElement('tr');
-    headRow.innerHTML = '<th>Servicio</th><th>Precio desde</th>';
-    table.appendChild(headRow);
-
-    content.pricing.rows.forEach(function (row) {
-      var tr = document.createElement('tr');
-      var tdService = document.createElement('td');
-      tdService.textContent = row.service || '';
-      var tdPrice = document.createElement('td');
-      tdPrice.textContent = row.price || '';
-      tr.appendChild(tdService);
-      tr.appendChild(tdPrice);
-      table.appendChild(tr);
+    toggle.addEventListener('click', function () {
+      var expanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      nav.classList.toggle('is-open');
     });
 
-    section.appendChild(table);
-  }
-
-  function renderDesigns(content) {
-    var section = document.getElementById('designs');
-    if (!section) return;
-
-    section.innerHTML = '';
-    var h2 = document.createElement('h2');
-    h2.textContent = content.designs.title;
-    section.appendChild(h2);
-
-    content.designs.categories.forEach(function (cat) {
-      var title = document.createElement('h3');
-      title.textContent = cat.name;
-      title.style.marginTop = '1rem';
-      section.appendChild(title);
-
-      var gallery = document.createElement('div');
-      gallery.className = 'design-gallery';
-
-      (cat.images || []).forEach(function (img) {
-        var card = document.createElement('article');
-        card.className = 'design-card';
-
-        if (img.src) {
-          var image = document.createElement('img');
-          image.className = 'design-image';
-          image.src = img.src;
-          image.alt = img.caption || cat.name;
-          card.appendChild(image);
-        }
-
-        var caption = document.createElement('h3');
-        caption.textContent = img.caption || 'Dise\u00f1o';
-        card.appendChild(caption);
-        gallery.appendChild(card);
+    nav.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        nav.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
       });
-
-      if (!cat.images || cat.images.length === 0) {
-        var empty = document.createElement('p');
-        empty.textContent = 'Sin dise\u00f1os en esta carpeta todav\u00eda.';
-        gallery.appendChild(empty);
-      }
-
-      section.appendChild(gallery);
     });
+  }
+
+  function applyCategoryFromQuery() {
+    var form = document.getElementById('quoteForm');
+    if (!form) return;
+
+    var categoryField = document.getElementById('category');
+    if (!categoryField) return;
+
+    var params = new URLSearchParams(window.location.search);
+    var cat = params.get('cat');
+    if (!cat) return;
+
+    var normalized = cat.toLowerCase();
+    var matchedOption = Array.prototype.find.call(categoryField.options, function (opt) {
+      return opt.value.toLowerCase() === normalized || opt.textContent.toLowerCase() === normalized;
+    });
+
+    if (matchedOption) {
+      categoryField.value = matchedOption.value;
+    }
   }
 
   function bindQuoteForm() {
-    var quoteForm = document.getElementById('quoteForm');
-    if (!quoteForm) return;
-    quoteForm.addEventListener('submit', function (e) {
+    var form = document.getElementById('quoteForm');
+    if (!form) return;
+
+    var submitBtn = form.querySelector('button[type="submit"]');
+    var statusEl = document.getElementById('quoteStatus');
+    var formAction = form.getAttribute('action') || '';
+
+    applyCategoryFromQuery();
+
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
-      alert('\u00a1Gracias! Te contactaremos pronto.');
+      if (!submitBtn || !statusEl) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+      statusEl.className = 'form-status';
+      statusEl.textContent = '';
+
+      var isPlaceholder = formAction.indexOf('XXXXXXXX') !== -1;
+      var formData = new FormData(form);
+
+      var request = isPlaceholder
+        ? new Promise(function (resolve) {
+            setTimeout(resolve, 900);
+          })
+        : fetch(formAction, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              Accept: 'application/json'
+            }
+          });
+
+      request
+        .then(function () {
+          statusEl.classList.add('success');
+          statusEl.textContent = '¡Gracias! Tu solicitud fue enviada correctamente.';
+          form.reset();
+        })
+        .catch(function () {
+          statusEl.classList.add('error');
+          statusEl.textContent = 'No se pudo enviar ahora. Inténtalo nuevamente en unos minutos.';
+        })
+        .finally(function () {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Enviar solicitud';
+        });
     });
   }
 
-  var page = currentPage();
-  var content = loadContent();
-
-  renderHeader(page);
-  renderAbout(content);
-  renderContact(content);
-  renderPricing(content);
-  renderDesigns(content);
+  renderHeader();
+  renderFooter();
   bindQuoteForm();
 })();

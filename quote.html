@@ -1,52 +1,81 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ebanister&iacute;aCAD - Cotizaci&oacute;n</title>
+  <title>Solicitar Cotización | Ebanistería CAD</title>
+  <meta name="description" content="Solicita tu cotización de ebanistería en minutos. Cuéntanos tu categoría, medidas, materiales y presupuesto estimado." />
+  <meta property="og:title" content="Solicitar Cotización | Ebanistería CAD" />
+  <meta property="og:description" content="Completa el formulario y recibe una propuesta para tu proyecto de ebanistería." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://burgosaxel.github.io/EbanisteriaCAD_Website/quote.html" />
+  <meta property="og:image" content="https://burgosaxel.github.io/EbanisteriaCAD_Website/assets/logo.jpg" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="site-topbar"></header>
 
   <main>
-    <section id="quote">
-      <h2>Solicitar Cotizaci&oacute;n</h2>
-      <form id="quoteForm">
-        <label for="name">Nombre:</label>
-        <input type="text" id="name" required />
+    <section class="section">
+      <div class="container">
+        <h1 class="section-title">Solicitar Cotización</h1>
+        <p class="section-subtitle">Completa este formulario y te contactaremos con una propuesta adaptada a tu proyecto.</p>
 
-        <label for="email">Correo:</label>
-        <input type="email" id="email" required />
+        <div class="form-shell">
+          <!-- Reemplaza XXXXXX con tu endpoint real de Formspree -->
+          <form id="quoteForm" action="https://formspree.io/f/XXXXXXXX" method="POST">
+            <div class="grid grid-2">
+              <div>
+                <label for="name">Nombre *</label>
+                <input id="name" name="nombre" type="text" required />
+              </div>
+              <div>
+                <label for="phone">Teléfono *</label>
+                <input id="phone" name="telefono" type="tel" required />
+              </div>
+              <div>
+                <label for="email">Email *</label>
+                <input id="email" name="email" type="email" required />
+              </div>
+              <div>
+                <label for="category">Categoría *</label>
+                <select id="category" name="categoria" required>
+                  <option value="">Selecciona una categoría</option>
+                  <option value="Cocinas">Cocinas</option>
+                  <option value="Closets">Closets</option>
+                  <option value="Centros TV">Centros TV</option>
+                  <option value="Baños">Baños</option>
+                  <option value="Remodelación">Remodelación</option>
+                </select>
+              </div>
+              <div>
+                <label for="measures">Medidas aproximadas</label>
+                <input id="measures" name="medidas" type="text" placeholder="Ej. 12x10 pies" />
+              </div>
+              <div>
+                <label for="material">Material preferido</label>
+                <input id="material" name="material" type="text" placeholder="PVC, madera, etc." />
+              </div>
+              <div>
+                <label for="budget">Presupuesto estimado</label>
+                <input id="budget" name="presupuesto" type="text" placeholder="Ej. $5,000 - $8,000" />
+              </div>
+            </div>
 
-        <label for="projectDetails">Detalles del proyecto:</label>
-        <textarea id="projectDetails" rows="4" required></textarea>
+            <div>
+              <label for="message">Mensaje *</label>
+              <textarea id="message" name="mensaje" rows="5" required></textarea>
+            </div>
 
-        <button type="submit">Enviar solicitud</button>
-      </form>
+            <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+            <p id="quoteStatus" class="form-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-links">
-      <a class="footer-link" href="index.html">Inicio</a>
-      <a class="footer-link icon-only" href="https://www.facebook.com/share/1GQxtdCVWr/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook">
-        <svg viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M8.94 6.5H7.5V5.3c0-.35.23-.43.39-.43h1V3.01L7.6 3C6.26 3 6 4.03 6 5.2v1.3H5v1.7h1v4.8h1.5V8.2h1.27l.17-1.7z"/>
-        </svg>
-        <span class="sr-only">Facebook</span>
-      </a>
-      <a class="footer-link icon-only" href="https://wa.me/17874464469" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" title="WhatsApp">
-        <svg viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M13.601 2.326A7.854 7.854 0 0 0 8 0C3.582 0 0 3.582 0 8a7.95 7.95 0 0 0 1.149 4.106L0 16l4.014-1.123A7.93 7.93 0 0 0 8 16c4.418 0 8-3.582 8-8 0-2.136-.832-4.146-2.399-5.674zM8 14.5a6.47 6.47 0 0 1-3.316-.913l-.237-.142-2.382.666.636-2.322-.154-.238A6.472 6.472 0 0 1 1.5 8C1.5 4.41 4.41 1.5 8 1.5S14.5 4.41 14.5 8 11.59 14.5 8 14.5zm3.615-4.261c-.197-.099-1.17-.578-1.351-.643-.181-.066-.312-.099-.444.099-.131.197-.51.643-.624.775-.115.132-.23.148-.427.05-.197-.099-.83-.306-1.58-.975-.584-.52-.978-1.162-1.093-1.36-.115-.197-.012-.304.087-.403.089-.088.197-.23.296-.345.099-.115.132-.197.197-.329.066-.132.033-.247-.017-.346-.05-.099-.444-1.071-.608-1.469-.16-.387-.323-.334-.444-.34l-.378-.007a.726.726 0 0 0-.526.247c-.181.197-.69.675-.69 1.646s.707 1.909.805 2.041c.099.132 1.39 2.124 3.37 2.977.471.203.839.324 1.126.415.473.15.904.129 1.244.078.38-.057 1.17-.478 1.336-.94.165-.461.165-.857.115-.94-.05-.083-.181-.132-.378-.23z"/>
-        </svg>
-        <span class="sr-only">WhatsApp</span>
-      </a>
-      <a class="footer-link" href="contact.html">Cont&aacute;ctenos</a>
-      <a class="footer-link" href="quote.html">Solicitar Cotizaci&oacute;n</a>
-    </div>
-    <p>&copy; 2026 Ebanister&iacute;aCAD. Todos los derechos reservados.</p>
-  </footer>
+  <footer class="site-footer"></footer>
   <script src="script.js?v=20260303"></script>
 </body>
 </html>

@@ -1,51 +1,77 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ebanister&iacute;aCAD - Dise&ntilde;os</title>
+  <title>Diseños | Ebanistería CAD</title>
+  <meta name="description" content="Explora ideas de cocinas, closets, centros TV, baños y remodelaciones para inspirarte y cotizar tu estilo ideal." />
+  <meta property="og:title" content="Diseños | Ebanistería CAD" />
+  <meta property="og:description" content="Galería de estilos y propuestas para proyectos de ebanistería personalizada." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://burgosaxel.github.io/EbanisteriaCAD_Website/designs.html" />
+  <meta property="og:image" content="https://burgosaxel.github.io/EbanisteriaCAD_Website/assets/index-hero.jpg" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="site-topbar"></header>
 
   <main>
-    <section id="designs">
-      <h2>Dise&ntilde;os Destacados</h2>
-      <div class="design-gallery">
-        <div class="design-card">
-          <h3>Cocina Moderna Minimalista</h3>
+    <section class="section">
+      <div class="container">
+        <h1 class="section-title">Diseños y Estilos</h1>
+        <p class="section-subtitle">Selecciona una categoría y cotiza el estilo que más te guste.</p>
+
+        <div class="hero-actions" style="margin-bottom: 1rem;">
+          <a class="btn btn-outline" href="#cocinas">Cocinas</a>
+          <a class="btn btn-outline" href="#closets">Closets</a>
+          <a class="btn btn-outline" href="#centros-tv">Centros TV</a>
+          <a class="btn btn-outline" href="#banos">Baños</a>
+          <a class="btn btn-outline" href="#remodelacion">Remodelación</a>
         </div>
-        <div class="design-card">
-          <h3>Acabado Cl&aacute;sico Elegante</h3>
-        </div>
-        <div class="design-card">
-          <h3>Closets y Muebles Empotrados</h3>
+
+        <div class="grid grid-3" id="cocinas">
+          <article class="card gallery-card">
+            <img class="gallery-thumb" src="assets/index-hero.jpg" alt="Diseño de cocina moderna en tonos madera" />
+            <h3>Cocina Moderna</h3>
+            <p>Distribución limpia con acabados de lujo y máxima funcionalidad.</p>
+            <a class="btn btn-primary" href="quote.html?cat=Cocinas">Cotizar este estilo</a>
+          </article>
+          <article class="card gallery-card" id="closets">
+            <img class="gallery-thumb" src="assets/index-hero.jpg" alt="Diseño de closet empotrado con almacenamiento inteligente" />
+            <h3>Closet Empotrado</h3>
+            <p>Optimiza tu espacio con módulos, gavetas y terminaciones elegantes.</p>
+            <a class="btn btn-primary" href="quote.html?cat=Closets">Cotizar este estilo</a>
+          </article>
+          <article class="card gallery-card" id="centros-tv">
+            <img class="gallery-thumb" src="assets/index-hero.jpg" alt="Centro de entretenimiento en madera para sala" />
+            <h3>Centro TV</h3>
+            <p>Diseño para integrar equipos, almacenamiento y estética moderna.</p>
+            <a class="btn btn-primary" href="quote.html?cat=Centros TV">Cotizar este estilo</a>
+          </article>
+          <article class="card gallery-card" id="banos">
+            <img class="gallery-thumb" src="assets/index-hero.jpg" alt="Mueble de baño a medida con acabado contemporáneo" />
+            <h3>Baño</h3>
+            <p>Gabinetes resistentes a humedad con estilo y practicidad.</p>
+            <a class="btn btn-primary" href="quote.html?cat=Baños">Cotizar este estilo</a>
+          </article>
+          <article class="card gallery-card" id="remodelacion">
+            <img class="gallery-thumb" src="assets/index-hero.jpg" alt="Remodelación interior con trabajo de ebanistería personalizada" />
+            <h3>Remodelación</h3>
+            <p>Renovamos espacios completos con una propuesta integral.</p>
+            <a class="btn btn-primary" href="quote.html?cat=Remodelación">Cotizar este estilo</a>
+          </article>
+          <article class="card gallery-card">
+            <img class="gallery-thumb" src="assets/index-hero.jpg" alt="Proyecto personalizado de ebanistería residencial" />
+            <h3>Proyecto Personalizado</h3>
+            <p>Creamos soluciones únicas según tu estilo y medidas.</p>
+            <a class="btn btn-primary" href="quote.html?cat=Remodelación">Cotizar este estilo</a>
+          </article>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-links">
-      <a class="footer-link" href="index.html">Inicio</a>
-      <a class="footer-link icon-only" href="https://www.facebook.com/share/1GQxtdCVWr/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook">
-        <svg viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M8.94 6.5H7.5V5.3c0-.35.23-.43.39-.43h1V3.01L7.6 3C6.26 3 6 4.03 6 5.2v1.3H5v1.7h1v4.8h1.5V8.2h1.27l.17-1.7z"/>
-        </svg>
-        <span class="sr-only">Facebook</span>
-      </a>
-      <a class="footer-link icon-only" href="https://wa.me/17874464469" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" title="WhatsApp">
-        <svg viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M13.601 2.326A7.854 7.854 0 0 0 8 0C3.582 0 0 3.582 0 8a7.95 7.95 0 0 0 1.149 4.106L0 16l4.014-1.123A7.93 7.93 0 0 0 8 16c4.418 0 8-3.582 8-8 0-2.136-.832-4.146-2.399-5.674zM8 14.5a6.47 6.47 0 0 1-3.316-.913l-.237-.142-2.382.666.636-2.322-.154-.238A6.472 6.472 0 0 1 1.5 8C1.5 4.41 4.41 1.5 8 1.5S14.5 4.41 14.5 8 11.59 14.5 8 14.5zm3.615-4.261c-.197-.099-1.17-.578-1.351-.643-.181-.066-.312-.099-.444.099-.131.197-.51.643-.624.775-.115.132-.23.148-.427.05-.197-.099-.83-.306-1.58-.975-.584-.52-.978-1.162-1.093-1.36-.115-.197-.012-.304.087-.403.089-.088.197-.23.296-.345.099-.115.132-.197.197-.329.066-.132.033-.247-.017-.346-.05-.099-.444-1.071-.608-1.469-.16-.387-.323-.334-.444-.34l-.378-.007a.726.726 0 0 0-.526.247c-.181.197-.69.675-.69 1.646s.707 1.909.805 2.041c.099.132 1.39 2.124 3.37 2.977.471.203.839.324 1.126.415.473.15.904.129 1.244.078.38-.057 1.17-.478 1.336-.94.165-.461.165-.857.115-.94-.05-.083-.181-.132-.378-.23z"/>
-        </svg>
-        <span class="sr-only">WhatsApp</span>
-      </a>
-      <a class="footer-link" href="contact.html">Cont&aacute;ctenos</a>
-      <a class="footer-link" href="quote.html">Solicitar Cotizaci&oacute;n</a>
-    </div>
-    <p>&copy; 2026 Ebanister&iacute;aCAD. Todos los derechos reservados.</p>
-  </footer>
+  <footer class="site-footer"></footer>
   <script src="script.js?v=20260303"></script>
 </body>
 </html>
